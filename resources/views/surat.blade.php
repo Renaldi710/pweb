@@ -1,31 +1,8 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Daftar Surat - {{ config('app.name', 'Laravel') }}</title>
+@extends('layouts.app')
 
-    @fonts
+@section('title', 'Daftar Surat - ' . config('app.name', 'Laravel'))
 
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
-</head>
-<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] min-h-screen flex flex-col antialiased">
-
-    {{-- Navbar --}}
-    <nav class="w-full bg-white dark:bg-[#161615] border-b border-[#e3e3e0] dark:border-[#3E3E3A] shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2 text-lg font-semibold tracking-wide">
-                <span>Surat<span class="text-[#f53003]">Kelurahan</span></span>
-            </a>
-            <a href="/"
-               class="inline-block px-4 py-1.5 text-sm border border-[#19140035] dark:border-[#3E3E3A] rounded-sm hover:bg-[#1b1b18] hover:text-white dark:hover:bg-[#eeeeec] dark:hover:text-[#1C1C1A] transition">
-                ← Beranda
-            </a>
-        </div>
-    </nav>
-
+@section('content')
     {{-- Hero Section --}}
     <section class="w-full bg-gradient-to-br from-[#f53003]/5 via-transparent to-transparent dark:from-[#f53003]/10 py-10">
         <div class="max-w-6xl mx-auto px-6 flex flex-col gap-2">
@@ -38,7 +15,6 @@
 
     {{-- Content --}}
     <main class="flex-1 w-full max-w-6xl mx-auto px-6 py-8">
-
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div class="bg-white dark:bg-[#161615] border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-md p-5 shadow-sm">
@@ -100,10 +76,7 @@
                                     <td class="px-6 py-4">{{ $surat->penduduk->nama ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         @if($surat->penduduk)
-                                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium
-                                                {{ $surat->penduduk->jk === 'L'
-                                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                                    : 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400' }}">
+                                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ $surat->penduduk->jk === 'L' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400' }}">
                                                 {{ $surat->penduduk->jk === 'L' ? 'Laki-laki' : 'Perempuan' }}
                                             </span>
                                         @else
@@ -119,14 +92,4 @@
             @endif
         </div>
     </main>
-
-    {{-- Footer --}}
-    <footer class="w-full border-t border-[#e3e3e0] dark:border-[#3E3E3A] py-6">
-        <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-xs text-[#706f6c] dark:text-[#A1A09A]">
-            <span>© {{ date('Y') }} SuratKelurahan — Laravel v{{ app()->version() }}</span>
-            <a href="/" class="hover:text-[#f53003] transition">Beranda</a>
-        </div>
-    </footer>
-
-</body>
-</html>
+@endsection

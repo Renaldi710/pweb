@@ -7,4 +7,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/surat', [SuratController::class, 'create']);
+//Route::get('/surat', [SuratController::class, 'create']);
+
+Route::resource('surat', SuratController::class);
