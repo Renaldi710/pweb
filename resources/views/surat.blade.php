@@ -5,11 +5,21 @@
 @section('content')
     {{-- Hero Section --}}
     <section class="w-full bg-gradient-to-br from-[#f53003]/5 via-transparent to-transparent dark:from-[#f53003]/10 py-10">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col gap-2">
-            <h1 class="text-2xl font-semibold">📋 Daftar Surat</h1>
-            <p class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                Menampilkan seluruh data surat yang telah diajukan oleh penduduk.
-            </p>
+        <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-2xl font-semibold">📋 Daftar Surat</h1>
+                <p class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    Menampilkan seluruh data surat yang telah diajukan oleh penduduk.
+                </p>
+            </div>
+            
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="inline-flex items-center justify-center rounded-md border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] px-4 py-2 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:border-rose-200 dark:hover:border-rose-900 hover:text-rose-600 dark:hover:text-rose-400 transition shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </section>
 
@@ -35,10 +45,11 @@
         <div class="bg-white dark:bg-[#161615] border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-md shadow-sm overflow-hidden">
             <div class="px-6 py-4 border-b border-[#e3e3e0] dark:border-[#3E3E3A] flex items-center justify-between">
                 <h2 class="font-medium text-sm">Data Surat Masuk</h2>
-                <span class="text-xs text-[#706f6c] dark:text-[#A1A09A]">{{ $semuaSurat->count() }} data ditemukan</span>
-            </div>
-
-            @if($semuaSurat->isEmpty())
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-[#706f6c] dark:text-[#A1A09A]">{{ $semuaSurat->count() }} data ditemukan</span>
+                    <a href="{{ route('surat.create') }}" class="inline-flex items-center justify-center rounded-md bg-[#f53003] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#d12c01] transition">Tambah Surat</a>
+                </div>
+            </div>            @if($semuaSurat->isEmpty())
                 <div class="px-6 py-16 text-center">
                     <svg class="w-12 h-12 mx-auto text-[#dbdbd7] dark:text-[#3E3E3A] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -59,6 +70,7 @@
                                 <th class="px-6 py-3 font-medium">Nama Penduduk</th>
                                 <th class="px-6 py-3 font-medium">JK</th>
                                 <th class="px-6 py-3 font-medium">Alamat</th>
+                                <th class="px-6 py-3 font-medium text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#e3e3e0] dark:divide-[#3E3E3A]">
@@ -84,6 +96,17 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-[#706f6c] dark:text-[#A1A09A] max-w-[200px] truncate">{{ $surat->penduduk->alamat ?? '-' }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('surat.show', $surat->id) }}" class="text-xs text-blue-600 hover:text-blue-800">Detail</a>
+                                            <a href="{{ route('surat.edit', $surat->id) }}" class="text-xs text-amber-600 hover:text-amber-800">Edit</a>
+                                            <form action="{{ route('surat.destroy', $surat->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus surat ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-xs text-red-600 hover:text-red-800">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
