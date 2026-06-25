@@ -11,6 +11,7 @@ class Surat extends Model
         'jenis_surat',
         'tanggal_ajuan',
         'penduduk_id',
+        'berkas_pendukung',
     ];
 
     protected $casts = [

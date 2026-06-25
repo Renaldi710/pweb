@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Surat;
 use App\Models\Penduduk;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratController extends Controller
 {
@@ -36,7 +38,16 @@ class SuratController extends Controller
             'jenis_surat' => 'required|string|max:100',
             'tanggal_ajuan' => 'required|date',
             'penduduk_id' => 'required|exists:penduduks,id',
+            'berkas_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('berkas_pendukung')) {
+            $namaFile = time() . '_' . $request->file('berkas_pendukung')->getClientOriginalName();
+            $path = $request->file('berkas_pendukung')->storeAs('berkas_surat', $namaFile, 'public');
+
+            $validated['berkas_pendukung'] = $path;
+        }
+
 
         Surat::create($validated);
 
@@ -72,9 +83,20 @@ class SuratController extends Controller
             'jenis_surat' => 'required|string|max:100',
             'tanggal_ajuan' => 'required|date',
             'penduduk_id' => 'required|exists:penduduks,id',
+            'berkas_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:2048',
         ]);
 
         $surat = Surat::findOrFail($id);
+
+        if ($request->hasFile('berkas_pendukung')) {
+            if ($surat->berkas_pendukung) {
+                Storage::disk('public')->delete($surat->berkas_pendukung);
+            }
+            $namaFile = time() . '_' . $request->file('berkas_pendukung')->getClientOriginalName();
+            $path = $request->file('berkas_pendukung')->storeAs('berkas_surat', $namaFile, 'public');
+            $validated['berkas_pendukung'] = $path;
+        }
+
         $surat->update($validated);
 
         return redirect()->route('surat.index')->with('success', 'Surat berhasil diperbarui.');
@@ -86,8 +108,42 @@ class SuratController extends Controller
     public function destroy(string $id)
     {
         $surat = Surat::findOrFail($id);
+        if ($surat->berkas_pendukung) {
+            Storage::disk('public')->delete($surat->berkas_pendukung);
+        }
         $surat->delete();
 
         return redirect()->route('surat.index')->with('success', 'Surat berhasil dihapus.');
+    }
+
+    public function uploadBerkas(Request $request, string $id)
+    {
+        $request->validate([
+            'berkas_pendukung' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $surat = Surat::findOrFail($id);
+
+        if ($request->hasFile('berkas_pendukung')) {
+            if ($surat->berkas_pendukung) {
+                Storage::disk('public')->delete($surat->berkas_pendukung);
+            }
+
+            $namaFile = time() . '_' . $request->file('berkas_pendukung')->getClientOriginalName();
+            $path = $request->file('berkas_pendukung')->storeAs('berkas_surat', $namaFile, 'public');
+            $surat->update(['berkas_pendukung' => $path]);
+        }
+
+        return redirect()->route('surat.index')->with('success', 'Berkas pendukung berhasil diupload.');
+    }
+
+    public function cetakPdf(string $id)
+    {
+        $surat = Surat::findOrFail($id);
+
+        $pdf = Pdf::loadView('surat.cetak', compact('surat'));
+
+        $namaFile = 'Surat_Kelurahan_' . str_replace(['/', '\\'], '_', $surat->nomor_surat) . '.pdf';
+        return $pdf->stream($namaFile);
     }
 }

@@ -30,7 +30,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('surat.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('surat.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     <div>
@@ -92,6 +92,21 @@
                             @endforeach
                         </select>
                         @error('penduduk_id')
+                            <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2" for="berkas_pendukung">Berkas Pendukung (Opsional)</label>
+                        <input
+                            id="berkas_pendukung"
+                            name="berkas_pendukung"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            class="w-full rounded-xl border border-[#e3e3e0] bg-white dark:bg-[#0b0b0b] px-4 py-3 text-[#1b1b18] dark:text-[#EDEDEC] focus:border-[#f53003] focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f53003]/10 file:text-[#f53003] hover:file:bg-[#f53003]/20"
+                        />
+                        <p class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">Format: PDF, JPG, PNG. Maksimal 2MB.</p>
+                        @error('berkas_pendukung')
                             <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                         @enderror
                     </div>

@@ -30,7 +30,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('surat.update', $surat->id) }}" method="POST" class="space-y-6">
+                <form action="{{ route('surat.update', $surat->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -93,6 +93,31 @@
                             @endforeach
                         </select>
                         @error('penduduk_id')
+                            <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2" for="berkas_pendukung">Berkas Pendukung (Opsional)</label>
+                        @if($surat->berkas_pendukung)
+                            <div class="mb-3 flex items-center gap-3 p-3 rounded-xl border border-[#e3e3e0] bg-[#FDFDFC] dark:bg-[#0a0a0a] dark:border-[#3E3E3A]">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">File saat ini:</span>
+                                <a href="{{ Storage::url($surat->berkas_pendukung) }}" target="_blank" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                                    Lihat Berkas
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </div>
+                        @endif
+                        <input
+                            id="berkas_pendukung"
+                            name="berkas_pendukung"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            class="w-full rounded-xl border border-[#e3e3e0] bg-white dark:bg-[#0b0b0b] px-4 py-3 text-[#1b1b18] dark:text-[#EDEDEC] focus:border-[#f53003] focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f53003]/10 file:text-[#f53003] hover:file:bg-[#f53003]/20"
+                        />
+                        <p class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">Format: PDF, JPG, PNG. Maksimal 2MB. Biarkan kosong jika tidak ingin mengubah berkas.</p>
+                        @error('berkas_pendukung')
                             <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                         @enderror
                     </div>

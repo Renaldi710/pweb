@@ -23,6 +23,22 @@
         </div>
     </section>
 
+    {{-- Session Success Message --}}
+    @if(session('success'))
+        <div class="max-w-6xl mx-auto px-6 pt-6">
+            <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-900 text-sm">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="max-w-6xl mx-auto px-6 pt-6">
+            <div class="rounded-xl bg-rose-50 border border-rose-200 p-4 text-rose-900 text-sm">
+                {{ $errors->first() }}
+            </div>
+        </div>
+    @endif
+
     {{-- Content --}}
     <main class="flex-1 w-full max-w-6xl mx-auto px-6 py-8">
         {{-- Stats Cards --}}
@@ -70,6 +86,7 @@
                                 <th class="px-6 py-3 font-medium">Nama Penduduk</th>
                                 <th class="px-6 py-3 font-medium">JK</th>
                                 <th class="px-6 py-3 font-medium">Alamat</th>
+                                <th class="px-6 py-3 font-medium">Berkas Pendukung</th>
                                 <th class="px-6 py-3 font-medium text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -96,14 +113,39 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-[#706f6c] dark:text-[#A1A09A] max-w-[200px] truncate">{{ $surat->penduduk->alamat ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        @if($surat->berkas_pendukung)
+                                            @php
+                                                $ext = strtolower(pathinfo($surat->berkas_pendukung, PATHINFO_EXTENSION));
+                                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+                                            @endphp
+                                            @if($isImage)
+                                                <a href="{{ Storage::url($surat->berkas_pendukung) }}" target="_blank">
+                                                    <img src="{{ Storage::url($surat->berkas_pendukung) }}" alt="Thumbnail" style="height: 50px; width: auto; object-fit: cover;" class="rounded border shadow-sm hover:opacity-80 transition">
+                                                </a>
+                                            @else
+                                                <a href="{{ Storage::url($surat->berkas_pendukung) }}" target="_blank" class="btn btn-info btn-sm bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-medium hover:bg-blue-200 transition">
+                                                    Lihat PDF
+                                                </a>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-secondary bg-gray-200 text-gray-700 px-2.5 py-1 rounded-full text-xs font-medium">Belum ada berkas</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('surat.show', $surat->id) }}" class="text-xs text-blue-600 hover:text-blue-800">Detail</a>
-                                            <a href="{{ route('surat.edit', $surat->id) }}" class="text-xs text-amber-600 hover:text-amber-800">Edit</a>
-                                            <form action="{{ route('surat.destroy', $surat->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus surat ini?');">
+                                        <div class="d-flex gap-1 flex-wrap flex justify-end gap-1">
+                                            <a href="{{ route('surat.cetak', $surat->id) }}" class="btn btn-primary btn-sm bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition" target="_blank">
+                                                Cetak PDF
+                                            </a>
+                                            <a href="{{ route('surat.edit', $surat->id) }}" class="btn btn-warning btn-sm bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-amber-600 transition">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('surat.destroy', $surat->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')" class="m-0">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-xs text-red-600 hover:text-red-800">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-red-700 transition">
+                                                    Hapus
+                                                </button>
                                             </form>
                                         </div>
                                     </td>
